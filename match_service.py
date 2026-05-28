@@ -7,6 +7,7 @@ from pymongo import MongoClient  # 💡 [추가] MongoDB 연동을 위한 라이
 
 import db_client
 import api_client
+import mongodb_client
 import player_service
 from config import URL_ASIA
 
@@ -184,14 +185,7 @@ def process_matches_fast(limit=1000, max_workers=20):
     """대기열 매치 수집 및 DB 동적 적재"""
 
     # 💡 [추가] MongoDB 커넥션 세팅 (스레드들이 공유할 수 있도록 풀 바깥에서 한 번만 생성)
-    try:
-        mongo_client = MongoClient("mongodb://localhost:27017/")
-        mongo_db = mongo_client["lol_data_lake"]
-        raw_collection = mongo_db["raw_match_data"]
-    except Exception as e:
-        print(f"⚠️ MongoDB 연결 실패 (MySQL 적재만 진행합니다): {e}")
-        raw_collection = None
-
+    raw_collection = mongodb_client.get_mongo_collection("lol_data_lake", "raw_match_data")
     conn = db_client.get_connection(autocommit=False)
     try:
         with conn.cursor() as cursor:

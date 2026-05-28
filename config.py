@@ -21,3 +21,7 @@ DB_CONFIG = {
     'database': os.environ.get("DB_NAME", "lol"),
     'charset': os.environ.get("DB_CHARSET", "utf8mb4")
 }
+
+MONGO_CONFIG = {
+    'host': os.environ.get("MONGO_HOST", "mongodb://localhost:27017/"),
+}
