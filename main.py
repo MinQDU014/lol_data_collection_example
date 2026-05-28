@@ -1,7 +1,7 @@
 import time
 import player_service
 import match_service
-
+import stats_service  # 새로 추가된 캐싱 서비스
 
 def main():
     while True:
@@ -12,7 +12,8 @@ def main():
         print("2. [1단계] DB 유저 기반 Match ID 대기열 채우기 (멀티스레드)")
         print("3. [2단계] 매치 상세 수집 및 DB 저장 (유저 자동추가 + 멀티스레드)")
         print("4. [자동화] 3번 작업을 무한 루프로 실행 (서버 켜두기용)")
-        print("5. 종료")
+        print("5. [분석] 챔피언 통계 조회 (Redis 캐싱 실습)")
+        print("6. 종료")
 
         choice = input("\n원하는 작업 번호를 입력하세요: ")
 
@@ -32,17 +33,20 @@ def main():
             try:
                 while True:
                     match_service.process_matches_fast(limit=1000, max_workers=20)
-                    time.sleep(2)  # DB 및 CPU 휴식
+                    time.sleep(2)
             except KeyboardInterrupt:
                 print("\n🛑 무한 수집 모드를 안전하게 중단했습니다.")
 
         elif choice == '5':
+            # 💡 [신규] 6번 메뉴: Redis 룩 어사이드 캐시 체험
+            stats_service.get_champion_stats_with_cache()
+
+        elif choice == '6':
             print("프로그램을 종료합니다.")
             break
 
         else:
-            print("잘못된 입력입니다. 1~5 사이의 숫자를 입력해 주세요.")
-
+            print("잘못된 입력입니다. 1~6 사이의 숫자를 입력해 주세요.")
 
 if __name__ == "__main__":
     main()
